@@ -61,8 +61,8 @@ ExpectedWaitingTime <- function(signals_num = 1, wand_num = 0) {
   # to avoid redundant computations of the code above
   CalculateEWT <- function(signals_num, wand_num) {
     
-    # If the number of times the magic wand can be used, is at least the number of signals
-    # then the expected waiting time equals 0
+    # If the number of times the magic wand can be used, is at least equal to 
+    # the number of signals, then the expected waiting time equals 0
     if (wand_num >= signals_num) {
       return(0)
     }
@@ -74,10 +74,10 @@ ExpectedWaitingTime <- function(signals_num = 1, wand_num = 0) {
     }
     
     # Calculate the expected waiting time at the remaining signals in two scenarios:
-    #   1. When using the wand at the current signal. 
-    #        Equal to CalculateEWT(signals_num = signals_num - 1, wand_num = wand_num - 1)
-    #   2. When not using the wand at the current signal
-    #        Equal to CalculateEWT(signals_num = signals_num - 1, wand_num = wand_num)
+    #   Scenario 1. When using the wand at the current signal. 
+    #                 Equal to CalculateEWT(signals_num = signals_num - 1, wand_num = wand_num - 1)
+    #   Scenario 2. When not using the wand at the current signal.
+    #                 Equal to CalculateEWT(signals_num = signals_num - 1, wand_num = wand_num)
     ewt1 <- CalculateEWT(signals_num = signals_num - 1, wand_num = wand_num - 1)
     ewt2 <- CalculateEWT(signals_num = signals_num - 1, wand_num = wand_num)
     
