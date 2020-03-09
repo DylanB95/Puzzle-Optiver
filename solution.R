@@ -11,3 +11,6 @@
 #   Can you write a script that takes as inputs the number of signals and the number 
 #   of times Calvin can use his magic wand, and outputs the expected waiting time?
 
+ExpectedWaitingTime <- function(signals_num = 1, wand_num = 0) {
+  
+}
