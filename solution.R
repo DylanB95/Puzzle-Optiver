@@ -57,45 +57,54 @@ ExpectedWaitingTime <- function(signals_num = 1, wand_num = 0) {
   
   #### Calculate expected waiting time given the optimal strategy ####
   
-  # If the number of times the magic wand can be used, is at least the number of signals
-  # then the expected waiting time equals 0
-  if (wand_num >= signals_num) {
-    return(0)
+  # Create internal function that will be used for the recursion
+  # to avoid redundant computations of the code above
+  CalculateEWT <- function(signals_num, wand_num) {
+    
+    # If the number of times the magic wand can be used, is at least the number of signals
+    # then the expected waiting time equals 0
+    if (wand_num >= signals_num) {
+      return(0)
+    }
+    
+    # If the magic wand can not be used anymore, the expected waiting time equals 
+    # expected_waiting_time * signals_num
+    if(wand_num == 0) {
+      return(expected_waiting_time * signals_num)
+    }
+    
+    # Calculate the expected waiting time at the remaining signals in two scenarios:
+    #   1. When using the wand at the current signal. 
+    #        Equal to CalculateEWT(signals_num = signals_num - 1, wand_num = wand_num - 1)
+    #   2. When not using the wand at the current signal
+    #        Equal to CalculateEWT(signals_num = signals_num - 1, wand_num = wand_num)
+    ewt1 <- CalculateEWT(signals_num = signals_num - 1, wand_num = wand_num - 1)
+    ewt2 <- CalculateEWT(signals_num = signals_num - 1, wand_num = wand_num)
+    
+    # The difference in expected waiting time between both scenarios
+    difference <- ewt1 - ewt2
+    
+    # If the value at the counter is greater than (or equal to) the difference, then
+    # it is beneficial to use the magic wand. The probability of using the wand, given this strategy
+    # equals: red_prob * (1 - difference / red_to_green)
+    use_wand_prob <- red_prob * (1 - difference / red_to_green)
+    
+    # The expected waiting time then consists of three components:
+    #   1. The signal is green, the wand is not used.
+    #   2. The signal is red:
+    #        a. The counter is less than the difference, the wand is not used.
+    #        b. The counter is greater than or equal to the difference, the wand is used.
+    # The components of the expected waiting time are as follows:
+    component_1 <- green_prob * ewt2
+    component_2a <- (1 - green_prob - use_wand_prob) * (0.5 * difference + ewt2)
+    component_2b <- use_wand_prob * ewt1
+  
+    # Return the expected waiting time as the sum of the components
+    result <- component_1 + component_2a + component_2b
+    return(result)
   }
   
-  # If the magic wand can not be used anymore, the expected waiting time equals 
-  # expected_waiting_time * signals_num
-  if(wand_num == 0) {
-    return(expected_waiting_time * signals_num)
-  }
-  
-  # Calculate the expected waiting time at the remaining signals in two scenarios:
-  #   1. When using the wand at the current signal. 
-  #        Equal to ExpectedWaitingTime(signals_num = signals_num - 1, wand_num = wand_num - 1)
-  #   2. When not using the wand at the current signal
-  #        Equal to ExpectedWaitingTime(signals_num = signals_num - 1, wand_num = wand_num)
-  ewt1 <- ExpectedWaitingTime(signals_num = signals_num - 1, wand_num = wand_num - 1)
-  ewt2 <- ExpectedWaitingTime(signals_num = signals_num - 1, wand_num = wand_num)
-  
-  # The difference in expected waiting time between both scenarios
-  difference <- ewt1 - ewt2
-  
-  # If the value at the counter is greater than (or equal to) the difference, then
-  # it is beneficial to use the magic wand. The probability of using the wand, given this strategy
-  # equals: red_prob * (1 - difference / red_to_green)
-  use_wand_prob <- red_prob * (1 - difference / red_to_green)
-  
-  # The expected waiting time then consists of three components:
-  #   1. The signal is green, the wand is not used.
-  #   2. The signal is red:
-  #        a. The counter is less than the difference, the wand is not used.
-  #        b. The counter is greater than or equal to the difference, the wand is used.
-  # The components of the expected waiting time are as follows:
-  component_1 <- green_prob * ewt2
-  component_2a <- (1 - green_prob - use_wand_prob) * (0.5 * difference + ewt2)
-  component_2b <- use_wand_prob * ewt1
-
-  # Return the expected waiting time as the sum of the components
-  result <- component_1 + component_2a + component_2b
+  # Return the expected waiting time
+  result <- CalculateEWT(signals_num = signals_num, wand_num = wand_num)
   return(result)
 }
