@@ -69,7 +69,7 @@ ExpectedWaitingTime <- function(signals_num = 1, wand_num = 0) {
     
     # If the magic wand can not be used anymore, the expected waiting time equals 
     # expected_waiting_time * signals_num
-    if(wand_num == 0) {
+    if (wand_num == 0) {
       return(expected_waiting_time * signals_num)
     }
     
